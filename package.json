@@ -1,0 +1,13 @@
+{
+	"name":"TinyWiki",
+	"version":"1.0.0",
+	"license":"SEE LICENSE IN LICENCE.txt",
+	"description":"A tiny wike, but should be seen more like a codebase for projects with webinterface and online dynamic adjustable help.",
+	"dependencies":{ "websocket":">= 1.0.24"},
+	"scripts":{
+		"start":"node server.js"
+	},
+	"config":{"pass":"Pussy"},
+	"repository":{"type":"git", "url":"https://github.com/hogdahl/TinyWiki"},
+	"author":{"name":"Johan Högdahl","email":"johan.e.hogdahl@gmail.com","url":"https://www.hogdahls.se/tinywiki"}
+}
