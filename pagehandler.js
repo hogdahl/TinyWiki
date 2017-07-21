@@ -48,6 +48,7 @@ function processPage(settings, pageHandlers, url, onload){
 					
 					if(url.args && 'id' in url.args) {
 						filename = url.args.id;
+						console.log("WikiFile:" + filename);
 						addNoTopic = true;
 					}else{
 						filename = 'main';

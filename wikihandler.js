@@ -89,7 +89,7 @@ module.exports.WikiHandler = function(){
 	wh.readAndProcess = function(filename, addNoTopic){
 		var html = null;
 		try{
-			fs.readFileSync(wikiPath(filename));
+			html = fs.readFileSync(wikiPath(filename));
 		}catch(e){
 			console.log(e);
 		}
