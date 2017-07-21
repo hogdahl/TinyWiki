@@ -46,7 +46,7 @@ function processPage(settings, pageHandlers, url, onload){
 				if(data.indexOf('${tinyBody}') !== -1){
 					var filename, addNoTopic;
 					
-					if( 'id' in url.args) {
+					if(url.args && 'id' in url.args) {
 						filename = url.args.id;
 						addNoTopic = true;
 					}else{

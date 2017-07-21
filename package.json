@@ -1,6 +1,6 @@
 {
 	"name":"TinyWiki",
-	"version":"1.0.0",
+	"version":"1.0.1",
 	"license":"SEE LICENSE IN LICENCE.txt",
 	"description":"A tiny wike, but should be seen more like a codebase for projects with webinterface and online dynamic adjustable help.",
 	"dependencies":{ "websocket":">= 1.0.24"},

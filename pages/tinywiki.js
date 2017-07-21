@@ -156,6 +156,7 @@ function removeAll(hay,straw){
 }
 
 function WSocket(href){
+	var id = 'id' in href.args ? href.args.id : 'main';
 	var ws = this, url = href.url,
 	auth = false;
 	url = url.replace('http://','ws://');
@@ -210,20 +211,22 @@ function WSocket(href){
 			}
 			console.log('login Ok');
 			pageHeader.setAuth(msg.auth);
+			try{
 			if(! tinyEdit){
-				var id = 'id' in href.args ? href.args.id : 'main';
 				tinyEdit = new TinyEdit(id,null);
+			}
+			}catch(e){
+				console.log(e);
 			}
 			tinyEdit.setAuth(auth);
 			tinyEdit.onPublish = function(topic,html){
-				var ohtml = html;
 				var smsg = {};
 				smsg.id = topic;
 				smsg.handler = 'write';
 				html = removeAll(html, ' class="NONE"');
 				html = removeAll(html, ' class="EXIST"');
 				console.log(html);
-				smsg.data = ohtml;
+				smsg.data = html;
 				ws.sendMsg(smsg);
 			};
 		}
@@ -231,7 +234,6 @@ function WSocket(href){
 	
 	
 	socket.onopen = function(){
-		var id = 'id' in href.args ? href.args.id : 'main';
 		if(! document.getElementById('tinyBody')){
 			socket.send('{"handler":"read","id":"' + id + '"}');
 		}
@@ -244,7 +246,7 @@ function WSocket(href){
 				handler(msg);
 			}
 		}catch(e){
-			console.log('Failed to parse:' + amsg);
+			console.log('Failed to parse:' + amsg.data);
 		}
 	};
 	socket.onclose = function(){

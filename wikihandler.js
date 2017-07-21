@@ -37,10 +37,13 @@ module.exports.WikiHandler = function(){
 				if((ep = id.indexOf('&')) !== -1){
 					id = id.substr(0,ep);
 				}
-				exist = wh.files.indexOf(id) !== -1;
+				
+				console.log(wh.files);
+				exist = (wh.files.indexOf(id) !== -1);
 			}else{
 				exist = false;
 			}
+			console.log('id:' + id + ' index:' + wh.files.indexOf(id) + ' ' + exist);
 		}
 		
 		if( exist ){
@@ -84,7 +87,12 @@ module.exports.WikiHandler = function(){
 	};
 	
 	wh.readAndProcess = function(filename, addNoTopic){
-		var html = fs.readFileSync(wikiPath(filename));
+		var html = null;
+		try{
+			fs.readFileSync(wikiPath(filename));
+		}catch(e){
+			console.log(e);
+		}
 		if(! html){
 			if(addNoTopic){
 				html = '<div id="notopic"><h3>Topic:"' + filename + '" does not exist yet</h3> you must be logged in to create it.<br></div>';
