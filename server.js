@@ -13,7 +13,7 @@ settings.user='';
 settings.pass='Puss';
 settings.title='TinyWiki';
 settings.userOverride();
-if(config){
+if(config && Object.assign){
 	// override settings with package.json config
 	Object.assign(settings,config);
 }
