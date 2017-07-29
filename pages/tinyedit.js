@@ -34,6 +34,7 @@ function TinyEdit(topic, div){
 	}
 
 	function insertText(atext){
+		var selstart = text.selectionStart;
 		if (document.selection) {
 			text.focus();
 			var sel = document.selection.createRange();
@@ -48,6 +49,12 @@ function TinyEdit(topic, div){
 			text.value += atext;
 		}
 		div.innerHTML = text.value;
+		if(selstart !== false){
+			text.focus();
+			selstart += atext.length;
+			text.setSelectionRange(selstart,selstart);
+		}
+
 	}
 	
 	
@@ -385,8 +392,8 @@ function TinyEdit(topic, div){
 	var shiftKey = 0, ctrlKey = 0;
 	text.onkeydown = function (e){
 		if(e.keyCode === 13 && shiftKey === 16){
-			insertText('<br>');
-			//e.preventDefault();
+			insertText('<br>\n');
+			e.preventDefault();
 		}
 		if(e.keyCode === 16){
 			shiftKey = e.keyCode;

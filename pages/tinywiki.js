@@ -163,6 +163,20 @@ function WSocket(href){
 	url = url.replace('https://','wss://');
 	var socket = new WebSocket(url);
 
+	this.autologin = function(){
+		if(! auth){
+			// try autologin
+			var authkey = sessionStorage.getItem('authkey');
+			if(authkey){
+				var smsg = {};
+				smsg.handler = 'login';
+				smsg.auth = authkey;
+				ws.sendMsg(smsg);
+			}
+		}
+	}
+	
+	
 	var handlers = {};
 	handlers.read = function(msg){
 		createTinyBody();
@@ -181,16 +195,8 @@ function WSocket(href){
 				}else{
 					tinyBody.innerHTML = '<div id="notopic"><h3>Topic:"' + msg.id + '" does not exist yet</h3> you must be logged in to create it.<br></div>';
 				}
-			}
-		}
-		if(! auth){
-			// try autologin
-			var authkey = sessionStorage.getItem('authkey');
-			if(authkey){
-				var smsg = {};
-				smsg.handler = 'login';
-				smsg.auth = authkey;
-				ws.sendMsg(smsg);
+			}else{
+				ws.autologin();
 			}
 		}
 
@@ -236,6 +242,8 @@ function WSocket(href){
 	socket.onopen = function(){
 		if(! document.getElementById('tinyBody')){
 			socket.send('{"handler":"read","id":"' + id + '"}');
+		}else{
+			ws.autologin();
 		}
 	};
 	socket.onmessage = function(amsg){
@@ -273,7 +281,9 @@ function addCss(){
 }
 
 href = new Href();
-if(! document.getElementById('tinyBody')){
+//check autologin
+var authkey = sessionStorage.getItem('authkey');
+if(authkey || ! document.getElementById('tinyBody')){
 	wsocket = new WSocket(href);
 }
 pageHeader = new PageHeader();
