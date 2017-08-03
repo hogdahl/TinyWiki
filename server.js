@@ -12,6 +12,7 @@ settings.port=3000;
 settings.user='';
 settings.pass='Puss';
 settings.title='TinyWiki';
+settings.notopic = '404'; // http errcode on no topic in wiki
 settings.userOverride();
 if(config && Object.assign){
 	// override settings with package.json config

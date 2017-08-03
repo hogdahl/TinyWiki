@@ -14,10 +14,11 @@ function getJs(script){
 /**
  * onload = function(responseCode,data)
  */
-function processPage(settings, pageHandlers, url, onload){
+function processPage(settings, pageHandlers, url, method, onload){
 	var pg = this;
 	pg.err = false;
 	this.data = null;
+	var retcode = 200;
 	if(url.path.indexOf('..') !== -1){
 		onload(403,null);
 		return;
@@ -54,10 +55,19 @@ function processPage(settings, pageHandlers, url, onload){
 						filename = 'main';
 						addNoTopic = false;
 					}
-					data = data.replace('${tinyBody}',pageHandlers.wikiHandler.readAndProcess(filename, addNoTopic));
+					if(data.indexOf('${tinyBody}') != -1){
+						if(method != 'HEAD'){
+							data = data.replace('${tinyBody}',pageHandlers.wikiHandler.readAndProcess(filename, addNoTopic));
+						}else{
+							data = "";
+						}
+						if(! pageHandlers.wikiHandler.exists(filename)){
+							retcode = settings.notopic;
+						}
+					}
 				}
 				
-				onload(200,data);
+				onload(retcode,data);
 			}
 		});
 	}else{
@@ -114,8 +124,8 @@ function Url(url){
 
 function PageHandler(settings, pageHandlers, request, response){
 	var url = new Url(request.url);
-	//console.log(util.inspect(url));
-	processPage(settings, pageHandlers, url, function(responseCode,data){
+	//console.log(util.inspect(request));
+	processPage(settings, pageHandlers, url, request.method, function(responseCode,data){
 		console.log(request.url + ':' + url.path + ':'  + responseCode);
 		response.writeHead(responseCode, {'Content-Type': url.mimeType });
 		if(data){

@@ -16,6 +16,10 @@ module.exports.WikiHandler = function(){
 		wh.files = files;
 	});
 	
+	this.exists = function(id){
+		return wh.files.indexOf(id) !== -1;
+	}
+	
 	function  setAClass(htmlPart){
 		if(htmlPart.charAt(0) !== '"'){
 			return htmlPart;
@@ -89,7 +93,9 @@ module.exports.WikiHandler = function(){
 	wh.readAndProcess = function(filename, addNoTopic){
 		var html = null;
 		try{
-			html = fs.readFileSync(wikiPath(filename));
+			if(wh.files.indexOf(filename) !== -1){
+				html = fs.readFileSync(wikiPath(filename));
+			}
 		}catch(e){
 			console.log(e);
 		}
