@@ -3,7 +3,7 @@
 var tinyNoTopicDiv = '<div id="notopic">';
 
 function TinyEdit(topic, div){
-	var te = this, editDiv = document.createElement('div'),button, text, publishButton;
+	var te = this, editDiv = document.createElement('div'),button, text, publishButton,strike;
 	if(!div){
 		div = document.getElementById('tinyBody');
 	}
@@ -235,6 +235,46 @@ function TinyEdit(topic, div){
 		}
 	}
 
+	function replaceLtGt(){
+		if (text.selectionStart || text.selectionStart === 0) {
+			var selstart = text.selectionStart,
+			start = text.value.substring(0, text.selectionStart);
+			var end = text.value.substring(text.selectionEnd);
+			var atext = text.value.substring(text.selectionStart,text.selectionEnd);
+			if(atext.length > 0){
+				while(atext.indexOf('<')!= -1){
+					atext = atext.replace('<','&lt;');
+				}
+				while(atext.indexOf('>')!= -1){
+					atext = atext.replace('>','&gt;');
+				}
+			}
+			text.value = start + atext + end ;
+			text.focus();
+			text.setSelectionRange(selstart ,selstart + atext.length);
+		}
+	}
+	function replaceLtGtNone(){
+		if (text.selectionStart || text.selectionStart === 0) {
+			var selstart = text.selectionStart,
+				start = text.value.substring(0, text.selectionStart);
+			var end = text.value.substring(text.selectionEnd);
+			var atext = text.value.substring(text.selectionStart,text.selectionEnd);
+			if(atext.length > 0){
+				while(atext.indexOf('&lt;')!= -1){
+					atext = atext.replace('&lt;','<');
+				}
+				while(atext.indexOf('&gt;')!= -1){
+					atext = atext.replace('&gt;','>');
+				}
+			}
+			text.value = start + atext + end ;
+			text.focus();
+			text.setSelectionRange(selstart ,selstart + atext.length);
+		}
+	}
+
+	
 	
 	editDiv.style.border = "solid #0000FF 1px";
 	editDiv.style.padding = '0.5%';
@@ -323,8 +363,21 @@ function TinyEdit(topic, div){
 	button = document.createElement('button');
 	button.type = button;
 	button.appendChild(document.createTextNode('>'));
-	button.title = 'include lt';
+	button.title = 'include gt';
 	button.onclick = function(){insertAfterSelected('&gt;');};
+	editDiv.appendChild(button);
+	button = document.createElement('button');
+	button.type = button;
+	button.appendChild(document.createTextNode('<>'));
+	button.title = 'replace any &lt; &gt; with html esc for them';
+	button.onclick = function(){replaceLtGt();};
+	editDiv.appendChild(button);
+	button = document.createElement('button');
+	button.type = button;
+	button.appendChild(document.createTextNode('<>'));
+	button.title = 'replace any html esc &lt; &gt; none esc chars';
+	button.style.color = 'RED';
+	button.onclick = function(){replaceLtGtNone();};
 	editDiv.appendChild(button);
 
 	
