@@ -187,7 +187,6 @@ function TinyEdit(topic, div){
 	}
 
 	function insertBeforeSelected(str){
-		var selstart = false,selend = false;
 		if (document.selection) {
 			text.focus();
 			var sel = document.selection.createRange();
@@ -195,12 +194,9 @@ function TinyEdit(topic, div){
 		}
 		//mozilla++
 		else if (text.selectionStart || text.selectionStart === 0) {
-			selstart = text.selectionStart;
-			selend = text.selectionEnd;
 			var start = text.value.substring(0, text.selectionStart);
-			var end = text.value.substring(text.selectionEnd);
-			var atext = text.value.substring(text.selectionStart,text.selectionEnd);
-			text.value = start + str + atext + end ;
+			var end = text.value.substring(text.selectionStart);
+			text.value = start + str + end ;
 		} else {
 			text.value += str;
 		}
@@ -211,7 +207,6 @@ function TinyEdit(topic, div){
 		}
 	}
 	function insertAfterSelected(str){
-		var selstart = false,selend = false;
 		if (document.selection) {
 			text.focus();
 			var sel = document.selection.createRange();
@@ -219,12 +214,9 @@ function TinyEdit(topic, div){
 		}
 		//mozilla++
 		else if (text.selectionStart || text.selectionStart === 0) {
-			selstart = text.selectionStart;
-			selend = text.selectionEnd;
-			var start = text.value.substring(0, text.selectionStart);
+			var start = text.value.substring(0, text.selectionEnd);
 			var end = text.value.substring(text.selectionEnd);
-			var atext = text.value.substring(text.selectionStart,text.selectionEnd);
-			text.value = start +  atext + str + end ;
+			text.value = start + str + end ;
 		} else {
 			text.value += str;
 		}
@@ -232,6 +224,52 @@ function TinyEdit(topic, div){
 		if(selstart !== false){
 			text.focus();
 			text.setSelectionRange(selstart ,selend + str.length);
+		}
+	}
+	function insertBeforeSelectedElement(str,selection){
+		var selend = false, startp;
+		//mozilla++
+		if (text.selectionStart || text.selectionStart === 0) {
+			startp = text.value.lastIndexOf('<',text.selectionEnd );
+			if(startp !== -1){
+				selend = startp;
+			}else{
+				selend = text.selectionEnd;
+			}
+			// we dont want to insert in a tag
+			var start = text.value.substring(0, selend);
+			var end = text.value.substring(selend);
+			text.value = start + str + end ;
+		} else {
+			text.value += str;
+		}
+		div.innerHTML = text.value;
+		if(selend !== false && selection){
+			text.focus();
+			text.setSelectionRange(selend + selection.start ,selend + selection.end);
+		}
+	}
+	function insertAfterSelectedElement(str,selection){
+		var selend = false, startp;
+		//mozilla++
+		if (text.selectionStart || text.selectionStart === 0) {
+			startp = text.value.indexOf('>',text.selectionEnd );
+			if(startp !== -1){
+				selend = startp +1;
+			}else{
+				selend = text.selectionEnd;
+			}
+			// we dont want to insert in a tag
+			var start = text.value.substring(0, selend);
+			var end = text.value.substring(selend);
+			text.value = start + str + end ;
+		} else {
+			text.value += str;
+		}
+		div.innerHTML = text.value;
+		if(selend !== false && selection){
+			text.focus();
+			text.setSelectionRange(selend + selection.start ,selend + selection.end);
 		}
 	}
 
@@ -354,6 +392,32 @@ function TinyEdit(topic, div){
 	button.onclick = function(){modifySelectedA();};
 	editDiv.appendChild(button);
 
+	button = document.createElement('button');
+	button.type = button;
+	button.appendChild(document.createTextNode('<table>'));
+	button.title = 'add a table';
+	button.onclick = function(){insertAfterSelectedElement('<table border="1"><tr><td><br></td></tr></table>',{ "start":26 , 'end':30 });};
+	editDiv.appendChild(button);
+	button = document.createElement('button');
+	button.type = button;
+	button.appendChild(document.createTextNode('<tr>'));
+	button.title = 'add a table row';
+	button.onclick = function(){insertAfterSelectedElement('<tr><td><br></td></tr>',{ "start":8 , 'end':12 });};
+	editDiv.appendChild(button);
+	button = document.createElement('button');
+	button.type = button;
+	button.appendChild(document.createTextNode('<th>'));
+	button.title = 'add a table header cell';
+	button.onclick = function(){insertAfterSelectedElement('<th><br></th>',{ "start":4 , 'end':8 });};
+	editDiv.appendChild(button);
+	button = document.createElement('button');
+	button.type = button;
+	button.appendChild(document.createTextNode('<td>'));
+	button.title = 'add a table cell';
+	button.onclick = function(){insertAfterSelectedElement('<td><br></td>',{ "start":4 , 'end':8 });};
+	editDiv.appendChild(button);
+
+	
 	button = document.createElement('button');
 	button.type = button;
 	button.appendChild(document.createTextNode('<'));
