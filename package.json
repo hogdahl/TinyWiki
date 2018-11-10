@@ -1,13 +1,24 @@
 {
-	"name":"TinyWiki",
-	"version":"1.0.6",
-	"license":"SEE LICENSE IN LICENCE.txt",
-	"description":"A tiny wike, but should be seen more like a codebase for projects with webinterface and online dynamic adjustable help.",
-	"dependencies":{ "websocket":">= 1.0.24"},
-	"scripts":{
-		"start":"node server.js"
+	"name": "TinyWiki",
+	"version": "1.1.0",
+	"license": "SEE LICENSE IN LICENCE.txt",
+	"description": "A tiny wike, but should be seen more like a codebase for projects with webinterface and online dynamic adjustable help.",
+	"dependencies": {
+		"websocket": "^1.0.28"
 	},
-	"config":{"pass":"Passy"},
-	"repository":{"type":"git", "url":"https://github.com/hogdahl/TinyWiki"},
-	"author":{"name":"Johan HÃ¶gdahl","email":"johan.e.hogdahl@gmail.com","url":"https://www.hogdahls.se/tinywiki"}
+	"scripts": {
+		"start": "node server.js"
+	},
+	"config": {
+		"pass": "Passy"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/hogdahl/TinyWiki"
+	},
+	"author": {
+		"name": "Johan Högdahl",
+		"email": "johan.e.hogdahl@gmail.com",
+		"url": "https://www.hogdahls.se/tinywiki"
+	}
 }

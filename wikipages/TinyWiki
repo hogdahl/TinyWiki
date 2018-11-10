@@ -1,9 +1,20 @@
+
+
+
+
+
 <h1>TinyWiki</h1><br>
-is a tiny wiki where all editing in done with html code.<br>
+is a tiny wiki where all editing is done with html code.<br>
 The included editor will give a lot of help with the basic coding and with creating internal links to new topics.<h2>Internal links</h2> 
 To create an internal link to an new or existing topic, just mark the section of text you want to include, click the &lt;a&gt; button and you got a ready to go link.<br>
-if The link goes to a none existing topic it will look like <a href="/?id=A_Topic_not_very_likely_to_exist" class="NONE">A Topic not very likely to exist</a> While <a href="/?id=TinyWiki" class="EXIST">TinyWiki</a> is an existing visited topic;
+if The link goes to a none existing topic it will look like <a href="/?id=A_Topic_not_very_likely_to_exist">A Topic not very likely to exist</a> While <a href="/?id=TinyWiki">TinyWiki</a> is an existing visited topic;
+<br>
+Now you can also use and edit .js and .css files, edit them as ordinary wiki files and link them with path like /file.js
+check out <a href="/?id=my.css">my.css</a>
+<style src="my.css"></style>
+<div class="redtest">Red</div>
 
+<br><br>
 Wish you much fun with TinyWiki<br>
 <br><a href="http://www_hogdahls_se">www.hogdahls.se</a><br>
 Johan Högdahl

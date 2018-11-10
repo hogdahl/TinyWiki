@@ -71,8 +71,28 @@ function processPage(settings, pageHandlers, url, method, onload){
 			}
 		});
 	}else{
-		console.log('dont exists realPath:' + realPath);
-		onload(403,null);
+		realPath = process.cwd() + '/wikipages' + url.path;
+		if(fs.existsSync(realPath)){
+			if(url.path.endsWith('.js') || url.path.endsWith('.css')){
+				this.responseCode = 200;
+				fs.readFile(realPath, function(err,data){
+					if(err){
+						onload(403,null);
+					}else{
+						// data is the page
+						onload(200,data);
+						return;
+					}
+				});
+			}else{
+				this.responseCode = 302;
+				console.log(url);
+				onload(302,'/?id=' + url.path.replace('/','') );
+			}
+		}else{
+			console.log('dont exists realPath:' + realPath);
+			onload(403,null);
+		}
 	}
 }
 
@@ -107,8 +127,8 @@ function getMimeType(path){
 }
 
 
-function Url(url){
-	var p = url.indexOf('?');
+function Url(request){
+	var url = request.url, p = url.indexOf('?');
 	if(p !== -1){
 		this.args = new Args(url.substr(p+1));
 		this.path = url.substr(0,p);
@@ -116,21 +136,31 @@ function Url(url){
 		this.args = null;
 		this.path = url;
 	}
-	
+	//this.host = request.headers.host;
 
 	this.mimeType = getMimeType(this.path);
 }
 
 
 function PageHandler(settings, pageHandlers, request, response){
-	var url = new Url(request.url);
+	var url = new Url(request);
 	//console.log(util.inspect(request));
 	processPage(settings, pageHandlers, url, request.method, function(responseCode,data){
+		console.log(request.headers.host);
 		console.log(request.url + ':' + url.path + ':'  + responseCode);
-		response.writeHead(responseCode, {'Content-Type': url.mimeType });
-		if(data){
-			response.end(data);
+		if(responseCode == 200){
+			response.writeHead(responseCode, {'Content-Type': url.mimeType });
+			//console.log('Content-Type:' + url.mimeType );
+			if(data){
+				response.end(data);
+			}else{
+				response.end('');
+			}
+		}else if(responseCode >= 300 && responseCode <= 302){
+			response.writeHead(responseCode, {'Location': data });
+			response.end('');
 		}else{
+			response.writeHead(responseCode, {'Content-Type': url.mimeType });
 			response.end('');
 		}
 	});

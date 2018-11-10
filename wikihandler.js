@@ -1,26 +1,43 @@
 var fs = require('fs');
 var wikiPath = require('./wikipath').wikiPath;
 var wikiDir = require('./wikipath').wikiDir;
+var WikiTopic = require('./wikitopic').WikiTopic;
 
 module.exports.WikiHandler = function(){
 	var wh = this;
-	this.files = [];
+	this.topics = {};
 	
 	this.addFile = function(filename){
-		if(! wh.files.indexOf(filename)){
-			wh.files.push(filename);
-		}
+		var topic = new WikiTopic(filename.topic);
+		topic.load(function(err,atopic){
+			if(! err){
+				wh.topics[atopic.topic.id] = atopic.topic;
+			}
+		});
+		
 	};
 	
 	fs.readdir(wikiDir(), function (err, files){
-		wh.files = files;
+		var topic, id;
+		for(var i = 0,l = files.length ; i < l ; i++ ){
+			id = files[i];
+			topic = new WikiTopic(id);
+			topic.load(function(err,atopic){
+				if(err){
+					console.log("failed to load topic:" + err);
+				}else {
+					wh.topics[atopic.topic.id] = atopic.topic;
+				}
+			});
+		}
 	});
 	
 	this.exists = function(id){
-		return wh.files.indexOf(id) !== -1;
+		return wh.topics[id]?true:false;
 	}
 	
 	function  setAClass(htmlPart){
+		console.log('htmlpart:' + htmlPart);
 		if(htmlPart.charAt(0) !== '"'){
 			return htmlPart;
 		}
@@ -32,22 +49,20 @@ module.exports.WikiHandler = function(){
 			if(ref.indexOf('://') !== -1){
 				return htmlPart; // not internal
 			}
-			if(ref.indexOf('.') !== -1){
-				return htmlPart; // not wiki , something with extension
-			}
+			//if(ref.indexOf('.') !== -1){
+			//	return htmlPart; // not wiki , something with extension
+			//}
 			idp = ref.indexOf('id=');
 			if(idp !== -1){
 				id = ref.substr(idp+3);
 				if((ep = id.indexOf('&')) !== -1){
 					id = id.substr(0,ep);
 				}
-				
-				console.log(wh.files);
-				exist = (wh.files.indexOf(id) !== -1);
+				exist = wh.topics[id]?true:false;;
 			}else{
 				exist = false;
 			}
-			console.log('id:' + id + ' index:' + wh.files.indexOf(id) + ' ' + exist);
+			console.log('id:' + id + ' index:' + wh.topics[id] + ' ' + exist);
 		}
 		
 		if( exist ){
@@ -87,16 +102,17 @@ module.exports.WikiHandler = function(){
 	 * 
 	 */
 	wh.addWiki = function(html){
-		return '<div id="tinyBody">\n' + wh.setAClasses(html) + '</div>'; 
+		return '<div id="tinyBody">\n' + html + '</div>'; 
 	};
 	
 	wh.readAndProcess = function(filename, addNoTopic){
 		var html = null;
 		try{
-			if(wh.files.indexOf(filename) !== -1){
+			if(wh.topics[filename]){
 				html = fs.readFileSync(wikiPath(filename));
 			}
 		}catch(e){
+			console.log('err-x');
 			console.log(e);
 		}
 		if(! html){
@@ -105,7 +121,10 @@ module.exports.WikiHandler = function(){
 			}else{
 				return "";
 			}
+		}else{
+			html = wh.setAClasses(html.toString());
 		}
+		
 		return wh.addWiki(html.toString());
 	};
 	

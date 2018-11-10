@@ -49,8 +49,8 @@ function TinyEdit(topic, div){
 			text.value += atext;
 		}
 		div.innerHTML = text.value;
+		text.focus();
 		if(selstart !== false){
-			text.focus();
 			selstart += atext.length;
 			text.setSelectionRange(selstart,selstart);
 		}
@@ -158,6 +158,7 @@ function TinyEdit(topic, div){
 			text.focus();
 			text.setSelectionRange(selstart + tag.length,selend + tag.length);
 		}
+		
 	}
 	
 	function modifySelectedA(){
@@ -184,9 +185,11 @@ function TinyEdit(topic, div){
 			text.value += tag + etag;
 		}
 		div.innerHTML = text.value;
+		
 	}
 
 	function insertBeforeSelected(str){
+		var selstart = false;
 		if (document.selection) {
 			text.focus();
 			var sel = document.selection.createRange();
@@ -201,12 +204,14 @@ function TinyEdit(topic, div){
 			text.value += str;
 		}
 		div.innerHTML = text.value;
+		text.focus();
 		if(selstart !== false){
-			text.focus();
 			text.setSelectionRange(selstart ,selend + str.length);
 		}
+		
 	}
 	function insertAfterSelected(str){
+		var selstart = false;
 		if (document.selection) {
 			text.focus();
 			var sel = document.selection.createRange();
@@ -221,10 +226,11 @@ function TinyEdit(topic, div){
 			text.value += str;
 		}
 		div.innerHTML = text.value;
+		text.focus();
 		if(selstart !== false){
-			text.focus();
 			text.setSelectionRange(selstart ,selend + str.length);
 		}
+		
 	}
 	function insertBeforeSelectedElement(str,selection){
 		var selend = false, startp;
@@ -244,17 +250,19 @@ function TinyEdit(topic, div){
 			text.value += str;
 		}
 		div.innerHTML = text.value;
+		text.focus();
 		if(selend !== false && selection){
-			text.focus();
 			text.setSelectionRange(selend + selection.start ,selend + selection.end);
 		}
+		
 	}
 	function insertAfterSelectedElement(str,selection){
-		var selend = false, startp;
+		var selend = false, startp,endp;
 		//mozilla++
 		if (text.selectionStart || text.selectionStart === 0) {
 			startp = text.value.indexOf('>',text.selectionEnd );
-			if(startp !== -1){
+			endp = text.value.indexOf('<',text.selectionEnd );
+			if(startp !== -1 && (endp == -1 || endp > startp )){
 				selend = startp +1;
 			}else{
 				selend = text.selectionEnd;
@@ -267,8 +275,8 @@ function TinyEdit(topic, div){
 			text.value += str;
 		}
 		div.innerHTML = text.value;
+		text.focus();
 		if(selend !== false && selection){
-			text.focus();
 			text.setSelectionRange(selend + selection.start ,selend + selection.end);
 		}
 	}
@@ -312,7 +320,13 @@ function TinyEdit(topic, div){
 		}
 	}
 
-	
+	function adjustTopMargin(){
+		if(div.clientHeight < 20){
+			editDiv.style.marginTop = '2em';
+		}else{
+			editDiv.style.marginTop = null;
+		}
+	}
 	
 	editDiv.style.border = "solid #0000FF 1px";
 	editDiv.style.padding = '0.5%';
@@ -382,7 +396,7 @@ function TinyEdit(topic, div){
 	button.type = button;
 	button.appendChild(document.createTextNode('<br>'));
 	button.title = 'break line, also [shift][enter]';
-	button.onclick = function(){modifySelected('<br>');};
+	button.onclick = function(){insertAfterSelected('<br>');};
 	editDiv.appendChild(button);
 	
 	button = document.createElement('button');
@@ -477,19 +491,19 @@ function TinyEdit(topic, div){
 	button = document.createElement('button');
 	button.type = button;
 	button.style.float = 'right';
-	button.appendChild(document.createTextNode('^'));
+	button.appendChild(document.createTextNode('⭱'));
 	button.title = 'Move editor above preview';
 	button.onclick = function(e){
 		var butt = e.target;
-		if(butt.innerText === '^'){
+		if(butt.innerText === '⭱'){
 			var adiv = div, ediv = editDiv;
 			butt.removeChild(butt.firstChild);
-			button.appendChild(document.createTextNode('v'));
+			button.appendChild(document.createTextNode('⭳'));
 			button.title = 'Move editor beneth preview';
 			editDiv.parentNode.insertBefore(editDiv,div);
 		}else{
 			butt.removeChild(butt.firstChild);
-			button.appendChild(document.createTextNode('^'));
+			button.appendChild(document.createTextNode('⭱'));
 			button.title = 'Move editor above preview';
 			editDiv.parentNode.insertBefore(div,editDiv);
 		}
@@ -534,14 +548,17 @@ function TinyEdit(topic, div){
 	
 	text.ondblclick = function(){
 		div.innerHTML = text.value;
+		adjustTopMargin();
 	};
 
 	text.onclick = function(){
 		div.innerHTML = text.value;
+		adjustTopMargin();
 	};
 
 	
 	document.body.appendChild(editDiv);
+																					
 	
 	this.setHint = function(ahint){
 		div.innerHTML = tinyNoTopicDiv + ahint + '</div>';

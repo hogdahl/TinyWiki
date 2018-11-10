@@ -14,9 +14,14 @@ settings.pass='Puss';
 settings.title='TinyWiki';
 settings.notopic = '404'; // http errcode on no topic in wiki
 settings.userOverride();
-if(config && Object.assign){
+if(config){
 	// override settings with package.json config
-	Object.assign(settings,config);
+	// Object.assign seems not always to be around 
+	var keys = Object.keys(config),key;
+	for(var i=0,l= keys.length;i<l;i++){
+		key = keys[i];
+		settings[key] = config[key];
+	}
 }
 console.log('Settings:\n' + settings);
 

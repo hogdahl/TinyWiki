@@ -4,7 +4,6 @@ var wikiPath = require('./wikipath').wikiPath;
 
 
 
-
 module.exports.WsHandler = function(ws, settings, pageHandlers){
 	var handlers  = {},
 	wikiHandler = pageHandlers.wikiHandler;
@@ -22,6 +21,24 @@ module.exports.WsHandler = function(ws, settings, pageHandlers){
 		});
 	};
 
+	handlers.checktopics = function(msg){
+		var checkTopics = msg.checkTopics, topics = [], id;
+		for(var i = 0, l = checkTopics.length;i<l;i++){
+			id = checkTopics[i];
+			if(wikiHandler.topics[id]){
+				topics.push(topic);
+			}
+		}
+		msg.data = topics;
+		sendMsg(msg);
+	}
+
+	handlers.topics = function(msg){
+		msg.data = wikiHandler.topics;
+		sendMsg(msg);
+	}
+
+	
 	handlers.read = function(msg){
 		fs.readFile(wikiPath(msg.id),function(err,data){
 			if(err){
